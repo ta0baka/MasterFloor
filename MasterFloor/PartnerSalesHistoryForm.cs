@@ -95,64 +95,6 @@ namespace MasterFloor
             return panel;
         }
 
-        // Метод для расчета количества материала (в самом приложении никак не используется)
-        public static int CalculateMaterialRequired(
-            int productTypeId,
-            int materialTypeId,
-            int productQuantity,
-            double productParam1,
-            double productParam2,
-            string connectionString)
-        {
-            try
-            {
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    // Получаем коэффициент типа продукции
-                    decimal typeCoefficient = 0;
-                    string productTypeQuery = "SELECT type_coefficient FROM product_types WHERE product_type_id = @id";
-                    using (var cmd = new NpgsqlCommand(productTypeQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@id", productTypeId);
-                        var result = cmd.ExecuteScalar();
-                        if (result == null) return -1;
-                        typeCoefficient = (decimal)result;
-                    }
-
-                    // Получаем процент брака материала
-                    decimal defectPercentage = 0;
-                    string materialTypeQuery = "SELECT defect_percentage FROM material_types WHERE material_type_id = @id";
-                    using (var cmd = new NpgsqlCommand(materialTypeQuery, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@id", materialTypeId);
-                        var result = cmd.ExecuteScalar();
-                        if (result == null) return -1;
-                        defectPercentage = (decimal)result;
-                    }
-
-                    // Проверка входных параметров
-                    if (productQuantity <= 0 || productParam1 <= 0 || productParam2 <= 0)
-                        return -1;
-
-                    // Расчет количества материала на одну единицу продукции
-                    double materialPerUnit = productParam1 * productParam2 * (double)typeCoefficient;
-
-                    // Расчет общего количества материала с учетом брака
-                    double totalMaterial = materialPerUnit * productQuantity;
-                    double materialWithDefect = totalMaterial / (1 - (double)defectPercentage);
-
-                    // Округляем вверх до целого числа
-                    return (int)Math.Ceiling(materialWithDefect);
-                }
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
