@@ -44,9 +44,9 @@ namespace MasterFloor
                             numRating.Value = Convert.ToDecimal(reader["rating"]);
                             txtAddress.Text = reader["legal_address"].ToString();
                             txtDirector.Text = reader["director"].ToString();
-                            txtPhone.Text = reader["phone"].ToString();
+                            maskedTextBoxPhone.Text = reader["phone"].ToString();
                             txtEmail.Text = reader["email"].ToString();
-                            txtINN.Text = reader["inn"].ToString();
+                            maskedTxtINN.Text = reader["inn"].ToString();
                         }
                     }
                 }
@@ -67,9 +67,9 @@ namespace MasterFloor
             cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
             cmd.Parameters.AddWithValue("@director", txtDirector.Text.Trim());
             cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
-            cmd.Parameters.AddWithValue("@phone", txtPhone.Text.Trim());
+            cmd.Parameters.AddWithValue("@phone", maskedTextBoxPhone.Text.Trim());
             cmd.Parameters.AddWithValue("@address", txtAddress.Text.Trim());
-            cmd.Parameters.AddWithValue("@inn", txtINN.Text.Trim());
+            cmd.Parameters.AddWithValue("@inn", maskedTxtINN.Text.Trim());
             cmd.Parameters.AddWithValue("@rating", (int)numRating.Value);
         }
 
@@ -82,27 +82,82 @@ namespace MasterFloor
 
         private bool ValidateInput()
         {
+            // Проверка наименования партнера
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
-                MessageBox.Show("Введите наименование партнера");
+                MessageBox.Show("Поле 'Наименование партнера' обязательно для заполнения",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                txtName.Focus();
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtINN.Text))
+            // Проверка типа партнера
+            if (cmbType.SelectedIndex == -1)
             {
-                MessageBox.Show("Введите ИНН партнера");
+                MessageBox.Show("Выберите тип партнера из списка",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                cmbType.Focus();
                 return false;
             }
 
-            if (txtINN.Text.Length != 10 && txtINN.Text.Length != 12)
+            // Проверка ИНН
+            if (!maskedTxtINN.MaskCompleted)
             {
-                MessageBox.Show("ИНН должен содержать 10 или 12 цифр");
+                MessageBox.Show("ИНН должен содержать 10 или 12 цифр\nФормат: 1234567890 или 123456789012",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                maskedTxtINN.Focus();
                 return false;
             }
 
-            if (!long.TryParse(txtINN.Text, out _))
+            // Проверка юридического адреса
+            if (string.IsNullOrWhiteSpace(txtAddress.Text))
             {
-                MessageBox.Show("ИНН должен содержать только цифры");
+                MessageBox.Show("Поле 'Юридический адрес' обязательно для заполнения",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                txtAddress.Focus();
+                return false;
+            }
+
+            // Проверка ФИО директора
+            if (string.IsNullOrWhiteSpace(txtDirector.Text))
+            {
+                MessageBox.Show("Поле 'Директор' обязательно для заполнения",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                txtDirector.Focus();
+                return false;
+            }
+
+            // Проверка телефона
+            if (!maskedTextBoxPhone.MaskCompleted)
+            {
+                MessageBox.Show("Введите корректный номер телефона\nФормат: +7 (XXX) XXX-XX-XX",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                maskedTextBoxPhone.Focus();
+                return false;
+            }
+
+            // Проверка email (базовая валидация)
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text) &&
+                !System.Text.RegularExpressions.Regex.IsMatch(txtEmail.Text,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                MessageBox.Show("Введите корректный email адрес\nФормат: example@domain.com",
+                              "Ошибка ввода",
+                              MessageBoxButtons.OK,
+                              MessageBoxIcon.Warning);
+                txtEmail.Focus();
                 return false;
             }
 

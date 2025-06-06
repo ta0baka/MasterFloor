@@ -87,6 +87,7 @@
             Controls.Add(pictureBox1);
             Controls.Add(lblAccounting);
             Controls.Add(flowLayoutPanel);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             Text = "Учет партнеров";

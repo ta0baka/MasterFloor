@@ -38,16 +38,16 @@
             lblName = new Label();
             btnBack = new Button();
             txtEmail = new TextBox();
-            txtPhone = new TextBox();
             txtDirector = new TextBox();
             txtAddress = new TextBox();
             numRating = new NumericUpDown();
             txtName = new TextBox();
             cmbType = new ComboBox();
             lblINN = new Label();
-            txtINN = new TextBox();
             lblAddEdit = new Label();
             btnSave = new Button();
+            maskedTxtINN = new MaskedTextBox();
+            maskedTextBoxPhone = new MaskedTextBox();
             ((System.ComponentModel.ISupportInitialize)numRating).BeginInit();
             SuspendLayout();
             // 
@@ -144,16 +144,6 @@
             txtEmail.Size = new Size(512, 31);
             txtEmail.TabIndex = 23;
             // 
-            // txtPhone
-            // 
-            txtPhone.BackColor = Color.FromArgb(244, 232, 211);
-            txtPhone.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            txtPhone.Location = new Point(335, 267);
-            txtPhone.Margin = new Padding(3, 4, 3, 4);
-            txtPhone.Name = "txtPhone";
-            txtPhone.Size = new Size(511, 31);
-            txtPhone.TabIndex = 22;
-            // 
             // txtDirector
             // 
             txtDirector.BackColor = Color.FromArgb(244, 232, 211);
@@ -216,16 +206,6 @@
             lblINN.TabIndex = 34;
             lblINN.Text = "ИНН";
             // 
-            // txtINN
-            // 
-            txtINN.BackColor = Color.FromArgb(244, 232, 211);
-            txtINN.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            txtINN.Location = new Point(335, 345);
-            txtINN.Margin = new Padding(3, 4, 3, 4);
-            txtINN.Name = "txtINN";
-            txtINN.Size = new Size(514, 31);
-            txtINN.TabIndex = 35;
-            // 
             // lblAddEdit
             // 
             lblAddEdit.AutoSize = true;
@@ -250,14 +230,35 @@
             btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += btnSave_Click;
             // 
+            // maskedTxtINN
+            // 
+            maskedTxtINN.BackColor = Color.FromArgb(244, 232, 211);
+            maskedTxtINN.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            maskedTxtINN.Location = new Point(336, 346);
+            maskedTxtINN.Mask = "0000000000";
+            maskedTxtINN.Name = "maskedTxtINN";
+            maskedTxtINN.Size = new Size(510, 31);
+            maskedTxtINN.TabIndex = 40;
+            // 
+            // maskedTextBoxPhone
+            // 
+            maskedTextBoxPhone.BackColor = Color.FromArgb(244, 232, 211);
+            maskedTextBoxPhone.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            maskedTextBoxPhone.Location = new Point(337, 268);
+            maskedTextBoxPhone.Mask = "000 000 00 00";
+            maskedTextBoxPhone.Name = "maskedTextBoxPhone";
+            maskedTextBoxPhone.Size = new Size(510, 31);
+            maskedTextBoxPhone.TabIndex = 41;
+            // 
             // PartnerEditForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(883, 529);
+            Controls.Add(maskedTextBoxPhone);
+            Controls.Add(maskedTxtINN);
             Controls.Add(btnSave);
             Controls.Add(lblAddEdit);
-            Controls.Add(txtINN);
             Controls.Add(lblINN);
             Controls.Add(lblEmail);
             Controls.Add(lblPhone);
@@ -268,12 +269,12 @@
             Controls.Add(lblName);
             Controls.Add(btnBack);
             Controls.Add(txtEmail);
-            Controls.Add(txtPhone);
             Controls.Add(txtDirector);
             Controls.Add(txtAddress);
             Controls.Add(numRating);
             Controls.Add(txtName);
             Controls.Add(cmbType);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "PartnerEditForm";
             Text = "Добавление/Редактирование партнера";
@@ -292,15 +293,16 @@
         private Label lblName;
         private Button btnBack;
         private TextBox txtEmail;
-        private TextBox txtPhone;
+        private TextBox maskedTxtPhone;
         private TextBox txtDirector;
         private TextBox txtAddress;
         private NumericUpDown numRating;
         private TextBox txtName;
         private ComboBox cmbType;
         private Label lblINN;
-        private TextBox txtINN;
         private Label lblAddEdit;
         private Button btnSave;
+        private MaskedTextBox maskedTxtINN;
+        private MaskedTextBox maskedTextBoxPhone;
     }
 }
