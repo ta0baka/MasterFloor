@@ -4,7 +4,7 @@ namespace MasterFloor
 {
     public partial class MainForm : Form
     {
-        private string connectionString = "Host=localhost;Username=postgres;Password=****;Database=master_floor";
+        private string connectionString = "Host=localhost;Username=postgres;Password=2928;Database=master_floor";
 
         public MainForm()
         {
@@ -107,7 +107,7 @@ namespace MasterFloor
 
             var btnHistory = new Button
             {
-                Text = "История заказов",
+                Text = "История продаж",
                 Location = new Point(10, 110),
                 Size = new Size(150, 30),
                 FlatStyle = FlatStyle.Flat,
