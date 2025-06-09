@@ -274,7 +274,6 @@
             Controls.Add(numRating);
             Controls.Add(txtName);
             Controls.Add(cmbType);
-            FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "PartnerEditForm";
             Text = "Добавление/Редактирование партнера";

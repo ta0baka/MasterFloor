@@ -4,7 +4,7 @@ namespace MasterFloor
 {
     public partial class MainForm : Form
     {   // Строка подключения
-        private string connectionString = "Host=db-demoexam.cchgeu.ru;Username=user*@cchgeu.ru;Password=your_password;Database=your_database";
+        private string connectionString = "Host=localhost;Username=postgres;Password=****;Database=master_floor";
 
         public MainForm()
         {
@@ -80,7 +80,7 @@ namespace MasterFloor
             int totalSales = Convert.ToInt32(reader["total_sales"]);
 
             // Создаем переменную панели
-            // Объявялем ее свойства: ширину, высоту, стиль границ панели, отступ между панелями, таг - индентификатор для перехода на другую форму
+            // Объявялем ее свойства: ширину (Width), высоту (Height), стиль границ панели (BorderStyle), отступ между панелями (Margin), таг (Tag) - индентификатор для перехода на другую форму
             var panel = new Panel
             {
                 Width = flowLayoutPanel.Width - 30,

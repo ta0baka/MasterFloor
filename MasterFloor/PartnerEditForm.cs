@@ -4,27 +4,34 @@ namespace MasterFloor
 {
     public partial class PartnerEditForm : Form
     {
+        // Получаем строку подключения к БД
         private readonly string connectionString;
-        private readonly int? partnerId;
         private NpgsqlConnection? connection;
-
+        // По ТЗ мы должны передать ID партнера (partnerId) с MainForm.cs на PartnerEditForm.cs для передачи данных в текстовые поля при редактировании партнера
+        private readonly int? partnerId;
+        
         public PartnerEditForm(string connectionString)
         {
             this.connectionString = connectionString;
             InitializeComponent();
         }
 
+        // Принимаем входные данные (ID партнера и строку подключения к БД) и выводим информацию о партнере (LoadPartnerData())
         public PartnerEditForm(int partnerId, string connectionString) : this(connectionString)
         {
             this.partnerId = partnerId;
             LoadPartnerData();
         }
 
+        // Реализация метода для отображения данных о партнере
         private void LoadPartnerData()
         {
+            // Проверяем, что ID не NULL
+            // ! = не
             if (!partnerId.HasValue)
                 return;
-
+            // Если все ок, то подключаемся к БД и считываем всю информацию из таблицы partners по id через запрос
+            // Используем конструкцию try catch, чтобы поймать ошибку (в случае ее наличия). Это требуется по ТЗ и полезно в целом
             try
             {
                 connection = new NpgsqlConnection(connectionString);
@@ -37,33 +44,43 @@ namespace MasterFloor
 
                     using (var reader = cmd.ExecuteReader())
                     {
+                        // Считываем атрибуты с таблицы partners, присваиваем их значения текстовым полям для отображения на форме
                         if (reader.Read())
                         {
                             txtName.Text = reader["partner_name"].ToString();
+                            // По ТЗ требуется тип партнера выносить в comboBox
                             cmbType.SelectedItem = reader["partner_type"].ToString();
+                            // Рейтинг выводим в NumericUpDown чтобы ничего кроме кроме цифр нельзя бло ввести (во избежание ошибок)
                             numRating.Value = Convert.ToDecimal(reader["rating"]);
                             txtAddress.Text = reader["legal_address"].ToString();
                             txtDirector.Text = reader["director"].ToString();
+                            // Здесь выводим номер в maskedTextBox также для того чтобы ничего кроме цифр ввести было нельзя
                             maskedTextBoxPhone.Text = reader["phone"].ToString();
                             txtEmail.Text = reader["email"].ToString();
+                            // Также как и номер телефона
                             maskedTxtINN.Text = reader["inn"].ToString();
                         }
                     }
                 }
             }
+            // В случае ошибки выводим информацию используя {ex.Massage}
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке данных партнера: {ex.Message}");
             }
+            // Закрываем подключение к БД, чтобы не было утечек, т.к. не использовали using (пояснение к using см. модуль 2)
             finally
             {
                 connection?.Close();
             }
         }
 
+        // Метод для заполнения текстовых полей данными
         private void AddParameters(NpgsqlCommand cmd)
         {
+            // Переводим данные в формат, подходящий под ComboBox - в String и проверяем на NULL (пустое значение)
             cmd.Parameters.AddWithValue("@type", cmbType.SelectedItem?.ToString() ?? string.Empty);
+            // Trim используем для удаления пробелов и табуляции (оставляет только текст, без лишних пробелов при отображении в textBox).
             cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
             cmd.Parameters.AddWithValue("@director", txtDirector.Text.Trim());
             cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
@@ -73,13 +90,15 @@ namespace MasterFloor
             cmd.Parameters.AddWithValue("@rating", (int)numRating.Value);
         }
 
-
+        // По ТЗ требуется осуществить переход между формами, поэтому создаем кнопку для возвращения на главную форму
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
 
+        // Валидация (проверка) на пустой ввод
+        // По ТЗ требуется прописывать в уведомлениях об ошибке подробно дальнейшие шаги пользователя, для ее устранения и пиктограмму (знак), например MessageBoxIcon.Warning
         private bool ValidateInput()
         {
             // Проверка наименования партнера
@@ -107,7 +126,7 @@ namespace MasterFloor
             // Проверка ИНН
             if (!maskedTxtINN.MaskCompleted)
             {
-                MessageBox.Show("ИНН должен содержать 10 или 12 цифр\nФормат: 1234567890 или 123456789012",
+                MessageBox.Show("ИНН должен содержать 10 цифр\nФормат: 1234567890",
                               "Ошибка ввода",
                               MessageBoxButtons.OK,
                               MessageBoxIcon.Warning);
@@ -140,7 +159,7 @@ namespace MasterFloor
             // Проверка телефона
             if (!maskedTextBoxPhone.MaskCompleted)
             {
-                MessageBox.Show("Введите корректный номер телефона\nФормат: +7 (XXX) XXX-XX-XX",
+                MessageBox.Show("Введите корректный номер телефона\nФормат: XXX XXX XX XX",
                               "Ошибка ввода",
                               MessageBoxButtons.OK,
                               MessageBoxIcon.Warning);
@@ -149,6 +168,8 @@ namespace MasterFloor
             }
 
             // Проверка email (базовая валидация)
+            // !(логическое НЕ) означает, что условие сработает, если строка НЕ соответствует шаблону
+            // Regex.IsMatch() — проверяет, соответствует ли строка (txtEmail.Text) регулярному выражению (шаблону email).
             if (!string.IsNullOrWhiteSpace(txtEmail.Text) &&
                 !System.Text.RegularExpressions.Regex.IsMatch(txtEmail.Text,
                 @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
@@ -164,8 +185,10 @@ namespace MasterFloor
             return true;
         }
 
+        // Кнопка сохранения/обновления данных
         private void btnSave_Click(object sender, EventArgs e)
         {
+            // Проверка на корректный ввод данных (используем метод, который написали выше)
             if (!ValidateInput())
                 return;
 
@@ -176,7 +199,7 @@ namespace MasterFloor
 
                 if (partnerId.HasValue)
                 {
-                    // Обновление существующего партнера
+                    // Обновление атрибутов существующего партнера
                     string updateQuery = @"UPDATE partners SET 
                             partner_type = @type, 
                             partner_name = @name, 
@@ -209,9 +232,11 @@ namespace MasterFloor
                     }
                 }
 
+                // При нажатии кнопки сохранения (btnSave) форма редактирования/добавления закрывается
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
+            // Ловим ошибки, в этом примере проверяем наличие уже существующего партнера (чтобы не было дублирования)
             catch (Npgsql.PostgresException ex) when (ex.SqlState == "23505")
             {
                 if (ex.Message.Contains("partner_name"))
